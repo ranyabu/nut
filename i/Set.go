@@ -3,7 +3,6 @@ package i
 type Set interface {
 	Len() int
 	Contains(interface{}) bool
-	ToArray()
 	Add(interface{}) bool
 	Remove(interface{}) bool
 	ContainsAll(Set) bool
@@ -11,4 +10,6 @@ type Set interface {
 	RetainAll(Set) bool
 	RemoveAll(Set) bool
 	Clear()
+
+	Iterator
 }

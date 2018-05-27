@@ -12,9 +12,6 @@ type Map interface {
 	Remove(interface{}) interface{}
 	PutAll(Map)
 	Clear()
-	KeySet() Iterator
-	Values() Iterator
-	EntrySet() Iterator
 	
 	Iterator
 }

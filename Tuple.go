@@ -1,5 +1,10 @@
 package nut
 
+type Tuple interface {
+	getKey() interface{}
+	getValue() interface{}
+}
+
 type TupleImpl struct {
 	K interface{}
 	V interface{}
@@ -13,6 +18,6 @@ func (ti *TupleImpl) getValue() interface{} {
 	return ti.V
 }
 
-func NewTuple() *TupleImpl {
-	return &TupleImpl{}
+func NewTuple(k, v interface{}) *TupleImpl {
+	return &TupleImpl{K: k, V: v}
 }

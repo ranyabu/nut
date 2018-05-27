@@ -6,11 +6,9 @@ import (
 )
 
 func TestLinkedMap(t *testing.T) {
-	lm := NewLinedMap()
-	
-	lm.Put("c", "c")
-	r := lm.ComputeIfPresent("c", func(key, value interface{}) interface{} {
-		return value.(string) + "1"
-	})
-	fmt.Println(r)
+	lm := NewLinkedMap()
+
+	lm.Put("a", "")
+	key := lm.ContainsKey("a")
+	fmt.Println(key)
 }

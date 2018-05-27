@@ -10,7 +10,7 @@ type LinkedMap struct {
 	kvs map[interface{}]interface{}
 }
 
-func NewLinedMap() *LinkedMap {
+func NewLinkedMap() *LinkedMap {
 	return &LinkedMap{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
@@ -46,7 +46,7 @@ func (lm *LinkedMap) Put(key interface{}, value interface{}) interface{} {
 	} else {
 		lm.ks.PushBack(key)
 	}
-	
+
 	lm.kvs[key] = value
 	return value
 }
@@ -94,7 +94,7 @@ func (lm *LinkedMap) Remove(key interface{}) interface{} {
 	return value
 }
 
-func (lm *LinkedMap) Foreach(consumer func(kv ...interface{})) {
+func (lm *LinkedMap) Foreach(consumer func(...interface{})) {
 	for e := lm.ks.Front(); e != nil; e = e.Next() {
 		consumer(e.Value, lm.kvs[e.Value])
 	}
@@ -109,16 +109,4 @@ func (lm *LinkedMap) PutAll(m i.Map) {
 func (lm *LinkedMap) Clear() {
 	lm.ks.Init()
 	lm.kvs = make(map[interface{}]interface{})
-}
-
-func (lm *LinkedMap) KeySet() i.Set {
-	return nil
-}
-
-func (lm *LinkedMap) Values() []interface{} {
-	return nil
-}
-
-func (lm *LinkedMap) EntrySet() []i.Tuple {
-	return nil
 }
