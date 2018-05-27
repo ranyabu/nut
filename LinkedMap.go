@@ -8,12 +8,21 @@ import (
 type LinkedMap struct {
 	ks  *list.List
 	kvs map[interface{}]interface{}
+	nf  func(interface{}) bool
 }
 
 func NewLinkedMap() *LinkedMap {
 	return &LinkedMap{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
+	}
+}
+
+func NewLinkedMap2(nf func(interface{}) bool) *LinkedMap {
+	return &LinkedMap{
+		ks:  list.New(),
+		kvs: make(map[interface{}]interface{}),
+		nf:  nf,
 	}
 }
 
@@ -39,8 +48,8 @@ func (lm *LinkedMap) Get(key interface{}) interface{} {
 }
 
 func (lm *LinkedMap) Put(key interface{}, value interface{}) interface{} {
-	if value == nil {
-		panic("value can't be nil")
+	if value == nil || (lm.nf != nil && lm.nf(value)) {
+		panic("value nil")
 	}
 
 	if lm.ContainsKey(key) {
