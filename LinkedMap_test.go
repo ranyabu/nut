@@ -8,7 +8,7 @@ import (
 func TestLinkedMap(t *testing.T) {
 	lm := NewLinkedMap()
 
-	lm.Put("a", "")
+	lm.Put("a", nil)
 	key := lm.ContainsKey("a")
 	fmt.Println(key)
 }

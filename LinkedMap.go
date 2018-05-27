@@ -39,6 +39,10 @@ func (lm *LinkedMap) Get(key interface{}) interface{} {
 }
 
 func (lm *LinkedMap) Put(key interface{}, value interface{}) interface{} {
+	if value == nil {
+		panic("value can't be nil")
+	}
+
 	if lm.ContainsKey(key) {
 		for e := lm.ks.Front(); e != nil; e = e.Next() {
 			lm.ks.MoveToBack(e)
