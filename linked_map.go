@@ -27,31 +27,32 @@ func NewLinkedMap2(nf func(interface{}) bool) *LinkedMap {
 }
 
 func (lm *LinkedMap) Len() int {
-	return lm.ks.Len()
+	if lm.ks != nil && lm.kvs != nil {
+		return lm.ks.Len()
+	} else {
+		return 0
+	}
 }
 
 func (lm *LinkedMap) ContainsKey(key interface{}) bool {
+	if lm.isNil(key) {
+		panic("key nil")
+	}
 	return lm.kvs[key] != nil
 }
 
-func (lm *LinkedMap) ContainsValue(value interface{}) bool {
-	for _, v := range lm.kvs {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
 func (lm *LinkedMap) Get(key interface{}) interface{} {
+	if lm.isNil(key) {
+		panic("key nil")
+	}
 	return lm.kvs[key]
 }
 
 func (lm *LinkedMap) Put(key interface{}, value interface{}) interface{} {
-	if value == nil || (lm.nf != nil && lm.nf(value)) {
-		panic("value nil")
+	if lm.isNil(key) || lm.isNil(value) {
+		panic("key or value nil")
 	}
-
+	
 	if lm.ContainsKey(key) {
 		for e := lm.ks.Front(); e != nil; e = e.Next() {
 			lm.ks.MoveToBack(e)
@@ -59,33 +60,33 @@ func (lm *LinkedMap) Put(key interface{}, value interface{}) interface{} {
 	} else {
 		lm.ks.PushBack(key)
 	}
-
+	
 	lm.kvs[key] = value
 	return value
 }
 
 func (lm *LinkedMap) PutIfAbsent(key interface{}, value interface{}) interface{} {
-	if !lm.ContainsKey(key) && value != nil {
+	if !lm.ContainsKey(key) {
 		lm.Put(key, value)
 		return nil
 	}
-	return value
+	return lm.Get(key)
 }
 
 func (lm *LinkedMap) ComputeIfAbsent(key interface{}, siFunc func(key interface{}) interface{}) interface{} {
 	if !lm.ContainsKey(key) {
 		newV := siFunc(key)
-		if newV != nil {
+		if !lm.isNil(newV) {
 			return lm.Put(key, newV)
 		}
 	}
-	return nil
+	return lm.Get(key)
 }
 
 func (lm *LinkedMap) ComputeIfPresent(key interface{}, biFunc func(key, value interface{}) interface{}) interface{} {
-	if value := lm.Get(key); value != nil {
+	if lm.ContainsKey(key) {
 		newV := biFunc(key, lm.kvs[key])
-		if newV != nil {
+		if !lm.isNil(newV) {
 			return lm.Put(key, newV)
 		} else {
 			lm.Remove(key)
@@ -96,6 +97,10 @@ func (lm *LinkedMap) ComputeIfPresent(key interface{}, biFunc func(key, value in
 }
 
 func (lm *LinkedMap) Remove(key interface{}) interface{} {
+	if lm.isNil(key) {
+		panic("key nil")
+	}
+	
 	for e := lm.ks.Front(); e != nil; e = e.Next() {
 		if key == e {
 			lm.ks.Remove(e)
@@ -122,4 +127,8 @@ func (lm *LinkedMap) PutAll(m i.Map) {
 func (lm *LinkedMap) Clear() {
 	lm.ks.Init()
 	lm.kvs = make(map[interface{}]interface{})
+}
+
+func (lm *LinkedMap) isNil(value interface{}) bool {
+	return (lm.nf != nil && lm.nf(value)) || value == nil
 }

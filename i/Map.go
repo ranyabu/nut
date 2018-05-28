@@ -3,7 +3,6 @@ package i
 type Map interface {
 	Len() int
 	ContainsKey(interface{}) bool
-	ContainsValue(interface{}) bool
 	Get(interface{}) interface{}
 	Put(interface{}, interface{}) interface{}
 	PutIfAbsent(interface{}, interface{}) interface{}
