@@ -75,18 +75,25 @@ func (si *SetImpl) Remove(value interface{}) bool {
 	return true
 }
 
-func (si *SetImpl) ForeachBreak(bk func(interface{}) (bool, interface{}), consumer func(...interface{})) {
+func (si *SetImpl) Foreach(consumer func(...interface{})) {
 	for key := range si.kvs {
-		if b, _ := bk(key); b {
-			break
-		}
 		consumer(key)
 	}
 }
 
+func (si *SetImpl) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
+	for key := range si.kvs {
+		if b := bk(key); b {
+			return key
+		}
+		consumer(key)
+	}
+	return nil
+}
+
 func (si *SetImpl) ContainsAll(set i.Set) bool {
-	set.ForeachBreak(func(value interface{}) (bool, interface{}) {
-		return si.kvs[value] == nil, value
+	_ := set.ForeachBreak(func(value interface{}) bool {
+		return si.kvs[value] == nil
 	}, func(consumer ...interface{}) {
 	
 	})
