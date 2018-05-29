@@ -112,12 +112,6 @@ func (lm *LinkedMap) Remove(key interface{}) interface{} {
 	return value
 }
 
-func (lm *LinkedMap) Foreach(consumer func(...interface{})) {
-	for e := lm.ks.Front(); e != nil; e = e.Next() {
-		consumer(e.Value, lm.kvs[e.Value])
-	}
-}
-
 func (lm *LinkedMap) PutAll(m i.Map) {
 	m.Foreach(func(kv ...interface{}) {
 		lm.kvs[kv[0]] = kv[1]
@@ -127,6 +121,22 @@ func (lm *LinkedMap) PutAll(m i.Map) {
 func (lm *LinkedMap) Clear() {
 	lm.ks.Init()
 	lm.kvs = make(map[interface{}]interface{})
+}
+
+func (si *LinkedMap) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
+	for key := range si.kvs {
+		if b := bk(key); b {
+			return key
+		}
+		consumer(key)
+	}
+	return nil
+}
+
+func (lm *LinkedMap) Foreach(consumer func(...interface{})) {
+	for e := lm.ks.Front(); e != nil; e = e.Next() {
+		consumer(e.Value, lm.kvs[e.Value])
+	}
 }
 
 func (lm *LinkedMap) isNil(value interface{}) bool {

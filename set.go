@@ -4,19 +4,6 @@ import (
 	"github.com/nut/i"
 )
 
-// type Set interface {
-// 	Len() int
-// 	Contains(interface{}) bool
-// 	Add(interface{}) bool
-// 	Remove(interface{}) bool
-// 	ContainsAll(Set) bool
-// 	AddAll(Set) bool
-// 	RetainAll(Set) bool
-// 	RemoveAll(Set) bool
-// 	Clear()
-//
-// 	Iterator
-// }
 var defaultValue = []byte{0}
 
 type SetImpl struct {
@@ -75,6 +62,34 @@ func (si *SetImpl) Remove(value interface{}) bool {
 	return true
 }
 
+
+func (si *SetImpl) ContainsAll(set i.Set) bool {
+	set.ForeachBreak(func(value interface{}) bool {
+		return si.kvs[value] == nil
+	}, func(consumer ...interface{}) {
+		// pass
+	})
+	return true
+}
+
+func (si *SetImpl) AddAll(set i.Set) bool {
+	set.Foreach(func(value ...interface{}) {
+		si.Add(value[0])
+	})
+	return true
+}
+
+func (si *SetImpl) RemoveAll(set i.Set) bool {
+	set.Foreach(func(value ...interface{}) {
+		si.Remove(value[0])
+	})
+	return true
+}
+
+func (si *SetImpl) Clear() {
+	si.kvs = make(map[interface{}]interface{})
+}
+
 func (si *SetImpl) Foreach(consumer func(...interface{})) {
 	for key := range si.kvs {
 		consumer(key)
@@ -89,15 +104,6 @@ func (si *SetImpl) ForeachBreak(bk func(interface{}) bool, consumer func(...inte
 		consumer(key)
 	}
 	return nil
-}
-
-func (si *SetImpl) ContainsAll(set i.Set) bool {
-	_ := set.ForeachBreak(func(value interface{}) bool {
-		return si.kvs[value] == nil
-	}, func(consumer ...interface{}) {
-	
-	})
-	return true
 }
 
 func (si *SetImpl) isNil(value interface{}) bool {
