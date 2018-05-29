@@ -25,5 +25,15 @@ func TestLinkedMap(t *testing.T) {
 		fmt.Println(i[0], i[1])
 	})
 	
-	lm.Get(nil)
+	v := lm.ForeachBreak(func(i interface{}) bool {
+		if i == "b" {
+			return true
+		}
+		return false
+	}, func(i ...interface{}) {
+		fmt.Println(i[0])
+	})
+	
+	fmt.Println(v)
+	
 }

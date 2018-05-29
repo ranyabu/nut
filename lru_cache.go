@@ -4,25 +4,25 @@ import (
 	"container/list"
 )
 
-type LRUMap struct {
+type lruCache struct {
 	ks  *list.List
 	kvs map[interface{}]interface{}
 	nf  func(interface{}) bool
 	max int
 }
 
-var defaultValue = []byte{0}
+var lruDv = []byte{0}
 
-func NewLRUMap(max int) *LRUMap {
-	return &LRUMap{
+func NewLRUMap(max int) *lruCache {
+	return &lruCache{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
 		max: max,
 	}
 }
 
-func NewLRUMap2(max int, nf func(interface{}) bool) *LRUMap {
-	return &LRUMap{
+func NewLRUMap2(max int, nf func(interface{}) bool) *lruCache {
+	return &lruCache{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
 		nf:  nf,
@@ -30,7 +30,7 @@ func NewLRUMap2(max int, nf func(interface{}) bool) *LRUMap {
 	}
 }
 
-func (lm *LRUMap) Len() int {
+func (lm *lruCache) Len() int {
 	if lm.ks != nil && lm.kvs != nil {
 		return lm.ks.Len()
 	} else {
@@ -38,7 +38,7 @@ func (lm *LRUMap) Len() int {
 	}
 }
 
-func (lm *LRUMap) Contains(value interface{}) bool {
+func (lm *lruCache) Contains(value interface{}) bool {
 	if lm.isNil(value) {
 		panic("value nil")
 	}
@@ -47,11 +47,11 @@ func (lm *LRUMap) Contains(value interface{}) bool {
 	
 }
 
-func (lm *LRUMap) Add(value interface{}) {
+func (lm *lruCache) Add(value interface{}) {
 	lm.AddIfAbsent(value)
 }
 
-func (lm *LRUMap) AddIfAbsent(value interface{}) interface{} {
+func (lm *lruCache) AddIfAbsent(value interface{}) interface{} {
 	if lm.isNil(value) {
 		panic("value nil")
 	}
@@ -69,12 +69,12 @@ func (lm *LRUMap) AddIfAbsent(value interface{}) interface{} {
 		}
 		
 		lm.ks.PushBack(value)
-		lm.kvs[value] = defaultValue
+		lm.kvs[value] = lruDv
 		return nil
 	}
 }
 
-func (lm *LRUMap) Remove(value interface{}) bool {
+func (lm *lruCache) Remove(value interface{}) bool {
 	if lm.isNil(value) {
 		panic("value nil")
 	}
@@ -91,13 +91,13 @@ func (lm *LRUMap) Remove(value interface{}) bool {
 	return false
 }
 
-func (lm *LRUMap) Foreach(consumer func(...interface{})) {
+func (lm *lruCache) Foreach(consumer func(...interface{})) {
 	for e := lm.ks.Front(); e != nil; e = e.Next() {
 		consumer(e.Value)
 	}
 }
 
-func (lm *LRUMap) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
+func (lm *lruCache) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
 	for value := range lm.kvs {
 		if b := bk(value); b {
 			return value
@@ -107,11 +107,11 @@ func (lm *LRUMap) ForeachBreak(bk func(interface{}) bool, consumer func(...inter
 	return nil
 }
 
-func (lm *LRUMap) Clear() {
+func (lm *lruCache) Clear() {
 	lm.ks.Init()
 	lm.kvs = make(map[interface{}]interface{})
 }
 
-func (lm *LRUMap) isNil(value interface{}) bool {
+func (lm *lruCache) isNil(value interface{}) bool {
 	return (lm.nf != nil && lm.nf(value)) || value == nil
 }

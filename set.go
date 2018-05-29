@@ -4,7 +4,7 @@ import (
 	"github.com/nut/i"
 )
 
-var defaultValue = []byte{0}
+var setDv = []byte{0}
 
 type setImpl struct {
 	kvs map[interface{}]interface{}
@@ -42,7 +42,7 @@ func (si *setImpl) Add(value interface{}) bool {
 	if !si.isNil(si.kvs[value]) {
 		return false
 	}
-	si.kvs[value] = defaultValue
+	si.kvs[value] = setDv
 	return true
 }
 
