@@ -5,19 +5,19 @@ type Tuple interface {
 	getValue() interface{}
 }
 
-type TupleImpl struct {
+type tupleImpl struct {
 	K interface{}
 	V interface{}
 }
 
-func (ti *TupleImpl) getKey() interface{} {
+func (ti *tupleImpl) getKey() interface{} {
 	return ti.K
 }
 
-func (ti *TupleImpl) getValue() interface{} {
+func (ti *tupleImpl) getValue() interface{} {
 	return ti.V
 }
 
-func NewTuple(k, v interface{}) *TupleImpl {
-	return &TupleImpl{K: k, V: v}
+func NewTuple(k, v interface{}) *tupleImpl {
+	return &tupleImpl{K: k, V: v}
 }
