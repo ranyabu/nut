@@ -1,4 +1,4 @@
-package i
+package c
 
 type Cache interface {
 	Len() int

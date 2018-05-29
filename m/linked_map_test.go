@@ -1,4 +1,4 @@
-package nut
+package m
 
 import (
 	"testing"

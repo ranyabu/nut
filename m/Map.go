@@ -1,4 +1,4 @@
-package i
+package m
 
 type Map interface {
 	Len() int

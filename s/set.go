@@ -1,4 +1,4 @@
-package nut
+package s
 
 import (
 	"github.com/nut/i"
