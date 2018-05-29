@@ -31,15 +31,11 @@ func (si *setImpl) Contains(value interface{}) bool {
 	if si.isNil(value) {
 		panic("value nil")
 	}
-	return si.kvs[value] != nil
+	return !si.isNil(si.kvs[value])
 }
 
 func (si *setImpl) Add(value interface{}) bool {
-	if si.isNil(value) {
-		panic("value nil")
-	}
-	
-	if !si.isNil(si.kvs[value]) {
+	if si.Contains(value) {
 		return false
 	}
 	si.kvs[value] = setDv
@@ -47,10 +43,6 @@ func (si *setImpl) Add(value interface{}) bool {
 }
 
 func (si *setImpl) Remove(value interface{}) bool {
-	if si.isNil(value) {
-		panic("value nil")
-	}
-	
 	if !si.Contains(value) {
 		return false
 	}

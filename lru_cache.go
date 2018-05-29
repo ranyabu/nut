@@ -52,10 +52,6 @@ func (lm *lruCache) Add(value interface{}) {
 }
 
 func (lm *lruCache) AddIfAbsent(value interface{}) interface{} {
-	if lm.isNil(value) {
-		panic("value nil")
-	}
-	
 	if lm.Contains(value) {
 		for e := lm.ks.Front(); e != nil; e = e.Next() {
 			lm.ks.MoveToBack(e)
@@ -75,10 +71,6 @@ func (lm *lruCache) AddIfAbsent(value interface{}) interface{} {
 }
 
 func (lm *lruCache) Remove(value interface{}) bool {
-	if lm.isNil(value) {
-		panic("value nil")
-	}
-	
 	if lm.Contains(value) {
 		for e := lm.ks.Front(); e != nil; e = e.Next() {
 			lm.ks.Remove(e)
