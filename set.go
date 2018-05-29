@@ -60,8 +60,8 @@ func (si *setImpl) Remove(value interface{}) bool {
 
 
 func (si *setImpl) ContainsAll(set i.Set) bool {
-	set.ForeachBreak(func(value interface{}) bool {
-		return si.kvs[value] == nil
+	set.ForeachBreak(func(value ...interface{}) bool {
+		return si.isNil(si.kvs[value[0]])
 	}, func(consumer ...interface{}) {
 		// pass
 	})

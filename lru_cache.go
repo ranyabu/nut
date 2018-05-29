@@ -97,7 +97,7 @@ func (lm *lruCache) Foreach(consumer func(...interface{})) {
 	}
 }
 
-func (lm *lruCache) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
+func (lm *lruCache) ForeachBreak(bk func(...interface{}) bool, consumer func(...interface{})) interface{} {
 	for value := range lm.kvs {
 		if b := bk(value); b {
 			return value

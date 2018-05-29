@@ -125,7 +125,7 @@ func (lm *linkedMap) Foreach(consumer func(...interface{})) {
 	}
 }
 
-func (si *linkedMap) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
+func (si *linkedMap) ForeachBreak(bk func(...interface{}) bool, consumer func(...interface{})) interface{} {
 	for key := range si.kvs {
 		if b := bk(key); b {
 			return key
