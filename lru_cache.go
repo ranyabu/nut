@@ -13,7 +13,7 @@ type lruCache struct {
 
 var lruDv = []byte{0}
 
-func NewLRUMap(max int) *lruCache {
+func NewLRUCache(max int) *lruCache {
 	return &lruCache{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
@@ -21,7 +21,7 @@ func NewLRUMap(max int) *lruCache {
 	}
 }
 
-func NewLRUMap2(max int, nf func(interface{}) bool) *lruCache {
+func NewLRUCache2(max int, nf func(interface{}) bool) *lruCache {
 	return &lruCache{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
