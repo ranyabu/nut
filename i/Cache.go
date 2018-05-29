@@ -2,7 +2,11 @@ package i
 
 type Cache interface {
 	Len() int
-	Put(interface{})
-	Get(interface{})
-	Remove(interface{})
+	Contains(interface{}) bool
+	Add(interface{})
+	AddIfAbsent(interface{}) interface{}
+	Remove(interface{}) bool
+	Clear()
+	
+	Iterator
 }

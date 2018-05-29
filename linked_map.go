@@ -5,50 +5,46 @@ import (
 	"github.com/nut/i"
 )
 
-type LinkedMap struct {
+type linkedMap struct {
 	ks  *list.List
 	kvs map[interface{}]interface{}
 	nf  func(interface{}) bool
 }
 
-func NewLinkedMap() *LinkedMap {
-	return &LinkedMap{
+func NewLinkedMap() *linkedMap {
+	return &linkedMap{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
 	}
 }
 
-func NewLinkedMap2(nf func(interface{}) bool) *LinkedMap {
-	return &LinkedMap{
+func NewLinkedMap2(nf func(interface{}) bool) *linkedMap {
+	return &linkedMap{
 		ks:  list.New(),
 		kvs: make(map[interface{}]interface{}),
 		nf:  nf,
 	}
 }
 
-func (lm *LinkedMap) Len() int {
-	if lm.ks != nil && lm.kvs != nil {
-		return lm.ks.Len()
-	} else {
-		return 0
-	}
+func (lm *linkedMap) Len() int {
+	return lm.ks.Len()
 }
 
-func (lm *LinkedMap) ContainsKey(key interface{}) bool {
+func (lm *linkedMap) ContainsKey(key interface{}) bool {
 	if lm.isNil(key) {
 		panic("key nil")
 	}
 	return lm.kvs[key] != nil
 }
 
-func (lm *LinkedMap) Get(key interface{}) interface{} {
+func (lm *linkedMap) Get(key interface{}) interface{} {
 	if lm.isNil(key) {
 		panic("key nil")
 	}
 	return lm.kvs[key]
 }
 
-func (lm *LinkedMap) Put(key interface{}, value interface{}) interface{} {
+func (lm *linkedMap) Put(key interface{}, value interface{}) interface{} {
 	if lm.isNil(key) || lm.isNil(value) {
 		panic("key or value nil")
 	}
@@ -65,7 +61,7 @@ func (lm *LinkedMap) Put(key interface{}, value interface{}) interface{} {
 	return value
 }
 
-func (lm *LinkedMap) PutIfAbsent(key interface{}, value interface{}) interface{} {
+func (lm *linkedMap) PutIfAbsent(key interface{}, value interface{}) interface{} {
 	if !lm.ContainsKey(key) {
 		lm.Put(key, value)
 		return nil
@@ -73,7 +69,7 @@ func (lm *LinkedMap) PutIfAbsent(key interface{}, value interface{}) interface{}
 	return lm.Get(key)
 }
 
-func (lm *LinkedMap) ComputeIfAbsent(key interface{}, siFunc func(key interface{}) interface{}) interface{} {
+func (lm *linkedMap) ComputeIfAbsent(key interface{}, siFunc func(key interface{}) interface{}) interface{} {
 	if !lm.ContainsKey(key) {
 		newV := siFunc(key)
 		if !lm.isNil(newV) {
@@ -83,7 +79,7 @@ func (lm *LinkedMap) ComputeIfAbsent(key interface{}, siFunc func(key interface{
 	return lm.Get(key)
 }
 
-func (lm *LinkedMap) ComputeIfPresent(key interface{}, biFunc func(key, value interface{}) interface{}) interface{} {
+func (lm *linkedMap) ComputeIfPresent(key interface{}, biFunc func(key, value interface{}) interface{}) interface{} {
 	if lm.ContainsKey(key) {
 		newV := biFunc(key, lm.kvs[key])
 		if !lm.isNil(newV) {
@@ -96,7 +92,7 @@ func (lm *LinkedMap) ComputeIfPresent(key interface{}, biFunc func(key, value in
 	return nil
 }
 
-func (lm *LinkedMap) Remove(key interface{}) interface{} {
+func (lm *linkedMap) Remove(key interface{}) interface{} {
 	if lm.isNil(key) {
 		panic("key nil")
 	}
@@ -112,24 +108,24 @@ func (lm *LinkedMap) Remove(key interface{}) interface{} {
 	return value
 }
 
-func (lm *LinkedMap) PutAll(m i.Map) {
+func (lm *linkedMap) PutAll(m i.Map) {
 	m.Foreach(func(kv ...interface{}) {
 		lm.kvs[kv[0]] = kv[1]
 	})
 }
 
-func (lm *LinkedMap) Clear() {
+func (lm *linkedMap) Clear() {
 	lm.ks.Init()
 	lm.kvs = make(map[interface{}]interface{})
 }
 
-func (lm *LinkedMap) Foreach(consumer func(...interface{})) {
+func (lm *linkedMap) Foreach(consumer func(...interface{})) {
 	for e := lm.ks.Front(); e != nil; e = e.Next() {
 		consumer(e.Value, lm.kvs[e.Value])
 	}
 }
 
-func (si *LinkedMap) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
+func (si *linkedMap) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
 	for key := range si.kvs {
 		if b := bk(key); b {
 			return key
@@ -139,6 +135,6 @@ func (si *LinkedMap) ForeachBreak(bk func(interface{}) bool, consumer func(...in
 	return nil
 }
 
-func (lm *LinkedMap) isNil(value interface{}) bool {
+func (lm *linkedMap) isNil(value interface{}) bool {
 	return (lm.nf != nil && lm.nf(value)) || value == nil
 }

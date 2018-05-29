@@ -2,7 +2,6 @@ package nut
 
 import (
 	"container/list"
-	"github.com/nut/i"
 )
 
 type LRUMap struct {
@@ -11,6 +10,8 @@ type LRUMap struct {
 	nf  func(interface{}) bool
 	max int
 }
+
+var defaultValue = []byte{0}
 
 func NewLRUMap(max int) *LRUMap {
 	return &LRUMap{
@@ -37,87 +38,73 @@ func (lm *LRUMap) Len() int {
 	}
 }
 
-func (lm *LRUMap) Get(key interface{}) interface{} {
-	if lm.isNil(key) {
-		panic("key nil")
-	}
-	return lm.kvs[key]
-}
-
-func (lm *LRUMap) Put(key interface{}, value interface{}) interface{} {
-	if lm.isNil(key) || lm.isNil(value) {
-		panic("key or value nil")
+func (lm *LRUMap) Contains(value interface{}) bool {
+	if lm.isNil(value) {
+		panic("value nil")
 	}
 	
-	if lm.ContainsKey(key) {
+	return lm.isNil(lm.kvs[value])
+	
+}
+
+func (lm *LRUMap) Add(value interface{}) {
+	lm.AddIfAbsent(value)
+}
+
+func (lm *LRUMap) AddIfAbsent(value interface{}) interface{} {
+	if lm.isNil(value) {
+		panic("value nil")
+	}
+	
+	if lm.Contains(value) {
 		for e := lm.ks.Front(); e != nil; e = e.Next() {
 			lm.ks.MoveToBack(e)
+			break
 		}
+		return value
 	} else {
-		lm.ks.PushBack(key)
-	}
-	
-	lm.kvs[key] = value
-	return value
-}
-
-func (lm *LRUMap) PutIfAbsent(key interface{}, value interface{}) interface{} {
-	if !lm.ContainsKey(key) {
-		lm.Put(key, value)
+		if lm.ks.Len() == lm.max {
+			delete(lm.kvs, lm.ks.Front().Value)
+			lm.ks.Remove(lm.ks.Front())
+		}
+		
+		lm.ks.PushBack(value)
+		lm.kvs[value] = defaultValue
 		return nil
 	}
-	return lm.Get(key)
 }
 
-func (lm *LRUMap) ComputeIfAbsent(key interface{}, siFunc func(key interface{}) interface{}) interface{} {
-	if !lm.ContainsKey(key) {
-		newV := siFunc(key)
-		if !lm.isNil(newV) {
-			return lm.Put(key, newV)
-		}
-	}
-	return lm.Get(key)
-}
-
-func (lm *LRUMap) ComputeIfPresent(key interface{}, biFunc func(key, value interface{}) interface{}) interface{} {
-	if lm.ContainsKey(key) {
-		newV := biFunc(key, lm.kvs[key])
-		if !lm.isNil(newV) {
-			return lm.Put(key, newV)
-		} else {
-			lm.Remove(key)
-			return nil
-		}
-	}
-	return nil
-}
-
-func (lm *LRUMap) Remove(key interface{}) interface{} {
-	if lm.isNil(key) {
-		panic("key nil")
+func (lm *LRUMap) Remove(value interface{}) bool {
+	if lm.isNil(value) {
+		panic("value nil")
 	}
 	
-	for e := lm.ks.Front(); e != nil; e = e.Next() {
-		if key == e {
+	if lm.Contains(value) {
+		for e := lm.ks.Front(); e != nil; e = e.Next() {
 			lm.ks.Remove(e)
 			break
 		}
+		delete(lm.kvs, value)
+		return true
 	}
-	value := lm.kvs[key]
-	delete(lm.kvs, key)
-	return value
+	
+	return false
 }
 
 func (lm *LRUMap) Foreach(consumer func(...interface{})) {
 	for e := lm.ks.Front(); e != nil; e = e.Next() {
-		consumer(e.Value, lm.kvs[e.Value])
+		consumer(e.Value)
 	}
 }
 
-func (lm *LRUMap) PutAll(m i.Map) {
-	m.Foreach(func(kv ...interface{}) {
-		lm.kvs[kv[0]] = kv[1]
-	})
+func (lm *LRUMap) ForeachBreak(bk func(interface{}) bool, consumer func(...interface{})) interface{} {
+	for value := range lm.kvs {
+		if b := bk(value); b {
+			return value
+		}
+		consumer(value)
+	}
+	return nil
 }
 
 func (lm *LRUMap) Clear() {
