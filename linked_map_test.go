@@ -1,4 +1,4 @@
-package ut
+package nut
 
 import (
 	"testing"
@@ -25,8 +25,8 @@ func TestLinkedMap(t *testing.T) {
 		fmt.Println(i[0], i[1])
 	})
 	
-	v := lm.ForeachBreak(func(i interface{}) bool {
-		if i == "b" {
+	v := lm.ForeachBreak(func(i ...interface{}) bool {
+		if i[0] == "b" {
 			return true
 		}
 		return false

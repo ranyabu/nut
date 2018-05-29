@@ -1,8 +1,8 @@
-package ut
+package nut
 
 import (
 	"container/list"
-	"github.com/nut/iter"
+	"github.com/nut/iterf"
 )
 
 type linkedMap struct {
@@ -108,7 +108,7 @@ func (lm *linkedMap) Remove(key interface{}) interface{} {
 	return value
 }
 
-func (lm *linkedMap) PutAll(m iter.Map) {
+func (lm *linkedMap) PutAll(m iterf.Map) {
 	m.Foreach(func(kv ...interface{}) {
 		lm.kvs[kv[0]] = kv[1]
 	})

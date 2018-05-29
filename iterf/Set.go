@@ -1,4 +1,4 @@
-package m
+package iterf
 
 type Set interface {
 	Len() int
@@ -10,6 +10,6 @@ type Set interface {
 	RetainAll(Set) bool
 	RemoveAll(Set) bool
 	Clear()
-
+	
 	Iterator
 }
