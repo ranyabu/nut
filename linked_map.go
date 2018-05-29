@@ -6,15 +6,15 @@ import (
 )
 
 type linkedMap struct {
-	ks  *list.List
-	kvs map[interface{}]interface{}
-	nf  func(interface{}) bool
+	ks   *list.List
+	kvs  map[interface{}]interface{}
+	nf   func(interface{}) bool
 }
 
 func NewLinkedMap() *linkedMap {
 	return &linkedMap{
-		ks:  list.New(),
-		kvs: make(map[interface{}]interface{}),
+		ks:   list.New(),
+		kvs:  make(map[interface{}]interface{}),
 	}
 }
 
