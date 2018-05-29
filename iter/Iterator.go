@@ -1,4 +1,4 @@
-package i
+package iter
 
 type Iterator interface {
 	Foreach(func(...interface{}))

@@ -1,4 +1,4 @@
-package s
+package m
 
 type Set interface {
 	Len() int

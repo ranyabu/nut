@@ -1,7 +1,7 @@
-package s
+package ut
 
 import (
-	"github.com/nut/i"
+	"github.com/nut/iter"
 )
 
 var setDv = []byte{0}
@@ -51,7 +51,7 @@ func (si *setImpl) Remove(value interface{}) bool {
 }
 
 
-func (si *setImpl) ContainsAll(set i.Set) bool {
+func (si *setImpl) ContainsAll(set iter.Set) bool {
 	set.ForeachBreak(func(value ...interface{}) bool {
 		return si.isNil(si.kvs[value[0]])
 	}, func(consumer ...interface{}) {
@@ -60,14 +60,14 @@ func (si *setImpl) ContainsAll(set i.Set) bool {
 	return true
 }
 
-func (si *setImpl) AddAll(set i.Set) bool {
+func (si *setImpl) AddAll(set iter.Set) bool {
 	set.Foreach(func(value ...interface{}) {
 		si.Add(value[0])
 	})
 	return true
 }
 
-func (si *setImpl) RemoveAll(set i.Set) bool {
+func (si *setImpl) RemoveAll(set iter.Set) bool {
 	set.Foreach(func(value ...interface{}) {
 		si.Remove(value[0])
 	})
