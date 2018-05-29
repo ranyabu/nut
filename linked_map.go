@@ -125,13 +125,16 @@ func (lm *linkedMap) Foreach(consumer func(...interface{})) {
 	}
 }
 
-func (si *linkedMap) ForeachBreak(bk func(...interface{}) bool, consumer func(...interface{})) interface{} {
-	for key := range si.kvs {
-		if b := bk(key); b {
-			return key
+func (lm *linkedMap) ForeachBreak(bk func(...interface{}) bool, consumer func(...interface{})) interface{} {
+	
+	for e := lm.ks.Front(); e != nil; e = e.Next() {
+		if b := bk(e.Value); b {
+			return e.Value
 		}
-		consumer(key)
+		consumer(e.Value, lm.kvs[e.Value])
 	}
+	
+	
 	return nil
 }
 
