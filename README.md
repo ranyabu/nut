@@ -49,3 +49,4 @@ type Map interface {
 10 Clear              重置
 11 Foreach            遍历
 12 ForeachBreak       遍历，中断时返回当前Key
+
