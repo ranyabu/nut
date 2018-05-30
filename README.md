@@ -118,6 +118,26 @@ type Cache interface {
 
 
 
+### Lock
+
+```go
+type Lock interface {
+	Lock()
+	Unlock()
+	TryLock(timeout time.Duration) bool
+	isLock() bool
+}
+```
+
+| 接口      | 说明         |
+| ------- | ---------- |
+| Lock    | 阻塞获取锁      |
+| Unlock  | 解除锁定       |
+| TryLock | 尝试获取锁，超时取消 |
+| isLock  | 当前锁是否处于锁状态 |
+
+
+
 ### 使用示例
 
 比如LinekedMap
