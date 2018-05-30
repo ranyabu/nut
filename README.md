@@ -4,11 +4,16 @@ NUT 是GO语言工具库，提供一些常用数据结构的封装。
 
 ### LinkedMap
 
-1, 创建 `lm := NewLinkedMap()`
+1, 创建   
 
-2, 赋值
+`lm := NewLinkedMap()`
+
+2, 赋值   
 
 `Put`
+
+> 1 如果存在，覆盖
+> 2 否则新增
 
 `PutIfAbsent`
 
