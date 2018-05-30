@@ -1,8 +1,7 @@
-# nut 是Golang工具类库
+### nut 是Go语言工具库
 
-提供`Map`，`Set`，`Cache`，`Lock`等基本工具类
+nut 提供LinkedMap/Set/LRUCache和一些扩展Lock实现
 
-## Map
 #### LinkedMap
 
 ```go
