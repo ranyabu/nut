@@ -50,7 +50,6 @@ func (si *setImpl) Remove(value interface{}) bool {
 	return true
 }
 
-
 func (si *setImpl) ContainsAll(set iterf.Set) bool {
 	set.ForeachBreak(func(value ...interface{}) bool {
 		return si.isNil(si.kvs[value[0]])
@@ -65,6 +64,17 @@ func (si *setImpl) AddAll(set iterf.Set) bool {
 		si.Add(value[0])
 	})
 	return true
+}
+
+func (si *setImpl) RetainAll(set iterf.Set) bool {
+	modified := false
+	set.Foreach(func(value ...interface{}) {
+		if !si.Contains(value[0]) {
+			si.Remove(value[0])
+			modified = true
+		}
+	})
+	return modified
 }
 
 func (si *setImpl) RemoveAll(set iterf.Set) bool {
