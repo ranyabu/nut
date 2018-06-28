@@ -1,8 +1,8 @@
 package nut
 
 type Tuple interface {
-	getKey() interface{}
-	getValue() interface{}
+	GetKey() interface{}
+	GetValue() interface{}
 }
 
 type tupleImpl struct {
