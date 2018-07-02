@@ -7,16 +7,14 @@ import (
 
 type keyLock struct {
 	smt  sync.Mutex
-	lock map[interface{}][]byte
+	lock map[interface{}]struct{}
 }
-
-var klDv = []byte{0}
 
 func (lk *keyLock) Lock(key interface{}) bool {
 	lk.smt.Lock()
 	defer lk.smt.Unlock()
-	if lk.lock[key] == nil {
-		lk.lock[key] = klDv
+	if lk.lock[key] == struct{}{} {
+		lk.lock[key] = struct{}{}
 		return true
 	} else {
 		return false
@@ -41,5 +39,5 @@ func (lk *keyLock) TryLock(key interface{}, timeout time.Duration) bool {
 }
 
 func (lk *keyLock) isLock(key interface{}) bool {
-	return lk.lock[key] == nil
+	return lk.lock[key] == struct{}{}
 }

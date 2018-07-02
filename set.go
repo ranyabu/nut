@@ -5,16 +5,12 @@ import (
 	"github.com/nut/common"
 )
 
-var setDv = []byte{0}
-
 type setImpl struct {
-	kvs map[interface{}]interface{}
-	nf  func(interface{}) bool
-	eq  func(interface{}, interface{}) bool
+	kvs map[interface{}]struct{}
 }
 
 func NewSet() *setImpl {
-	return &setImpl{kvs: make(map[interface{}]interface{})}
+	return &setImpl{kvs: make(map[interface{}]struct{})}
 }
 
 func (si *setImpl) Len() int {
@@ -29,7 +25,7 @@ func (si *setImpl) Add(value interface{}) bool {
 	if si.Contains(value) {
 		return false
 	}
-	si.kvs[value] = setDv
+	si.kvs[value] = struct{}{}
 	return true
 }
 
@@ -76,7 +72,7 @@ func (si *setImpl) RemoveAll(set iterf.Set) bool {
 }
 
 func (si *setImpl) Clear() {
-	si.kvs = make(map[interface{}]interface{})
+	si.kvs = make(map[interface{}]struct{})
 }
 
 func (si *setImpl) Foreach(consumer func(...interface{})) {
