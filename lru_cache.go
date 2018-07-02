@@ -2,12 +2,12 @@ package nut
 
 import (
 	"container/list"
+	"github.com/nut/common"
 )
 
 type lruCache struct {
 	ks  *list.List
 	kvs map[interface{}]interface{}
-	nf  func(interface{}) bool
 	max int
 }
 
@@ -21,15 +21,6 @@ func NewLRUCache(max int) *lruCache {
 	}
 }
 
-func NewLRUCache2(max int, nf func(interface{}) bool) *lruCache {
-	return &lruCache{
-		ks:  list.New(),
-		kvs: make(map[interface{}]interface{}),
-		nf:  nf,
-		max: max,
-	}
-}
-
 func (lm *lruCache) Len() int {
 	if lm.ks != nil && lm.kvs != nil {
 		return lm.ks.Len()
@@ -39,12 +30,7 @@ func (lm *lruCache) Len() int {
 }
 
 func (lm *lruCache) Contains(value interface{}) bool {
-	if lm.isNil(value) {
-		panic("value nil")
-	}
-	
-	return lm.isNil(lm.kvs[value])
-	
+	return common.IsNotNil(lm.kvs[value])
 }
 
 func (lm *lruCache) Add(value interface{}) {
@@ -102,8 +88,4 @@ func (lm *lruCache) ForeachBreak(bk func(...interface{}) bool, consumer func(...
 func (lm *lruCache) Clear() {
 	lm.ks.Init()
 	lm.kvs = make(map[interface{}]interface{})
-}
-
-func (lm *lruCache) isNil(value interface{}) bool {
-	return (lm.nf != nil && lm.nf(value)) || value == nil
 }

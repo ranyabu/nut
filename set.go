@@ -2,6 +2,7 @@ package nut
 
 import (
 	"github.com/nut/iterf"
+	"github.com/nut/common"
 )
 
 var setDv = []byte{0}
@@ -16,22 +17,12 @@ func NewSet() *setImpl {
 	return &setImpl{kvs: make(map[interface{}]interface{})}
 }
 
-func NewSet2(nf func(interface{}) bool) *setImpl {
-	return &setImpl{
-		kvs: make(map[interface{}]interface{}),
-		nf:  nf,
-	}
-}
-
 func (si *setImpl) Len() int {
 	return len(si.kvs)
 }
 
 func (si *setImpl) Contains(value interface{}) bool {
-	if si.isNil(value) {
-		panic("value nil")
-	}
-	return !si.isNil(si.kvs[value])
+	return common.IsNotNil(si.kvs[value])
 }
 
 func (si *setImpl) Add(value interface{}) bool {
@@ -52,7 +43,7 @@ func (si *setImpl) Remove(value interface{}) bool {
 
 func (si *setImpl) ContainsAll(set iterf.Set) bool {
 	set.ForeachBreak(func(value ...interface{}) bool {
-		return si.isNil(si.kvs[value[0]])
+		return common.IsNil(si.kvs[value[0]])
 	}, func(consumer ...interface{}) {
 		// pass
 	})
@@ -102,16 +93,4 @@ func (si *setImpl) ForeachBreak(bk func(interface{}) bool, consumer func(...inte
 		consumer(key)
 	}
 	return nil
-}
-
-func (si *setImpl) isNil(value interface{}) bool {
-	return value == nil || (si.nf != nil && si.nf(value))
-}
-
-func (si *setImpl) isEq(value1, value2 interface{}) bool {
-	if si.eq != nil {
-		return si.eq(value1, value2)
-	} else {
-		return value1 == value2
-	}
 }
