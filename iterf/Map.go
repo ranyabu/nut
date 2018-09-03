@@ -1,7 +1,6 @@
 package iterf
 
 type Map interface {
-	Len() int
 	ContainsKey(interface{}) bool
 	Get(interface{}) interface{}
 	Put(interface{}, interface{}) interface{}
@@ -10,7 +9,7 @@ type Map interface {
 	ComputeIfPresent(interface{}, func(interface{}, interface{}) interface{}) interface{}
 	Remove(interface{}) interface{}
 	PutAll(Map)
-	Clear()
-	
+
+	Collection
 	Iterator
 }

@@ -2,81 +2,97 @@ package nut
 
 import (
 	"container/list"
-	"github.com/nut/common"
+	"github.com/nut/util"
+	"sync"
 )
 
 type lruCache struct {
-	ks  *list.List
-	kvs map[interface{}]interface{}
-	max int
+	ks   *list.List
+	kvs  map[interface{}]struct{}
+	max  int
+	lock sync.RWMutex
 }
-
-var lruDv = []byte{0}
 
 func NewLRUCache(max int) *lruCache {
 	return &lruCache{
 		ks:  list.New(),
-		kvs: make(map[interface{}]interface{}),
+		kvs: make(map[interface{}]struct{}),
 		max: max,
 	}
 }
 
-func (lm *lruCache) Len() int {
-	if lm.ks != nil && lm.kvs != nil {
-		return lm.ks.Len()
-	} else {
-		return 0
-	}
+func (self *lruCache) Len() int {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	
+	return self.ks.Len()
 }
 
-func (lm *lruCache) Contains(value interface{}) bool {
-	return common.IsNotNil(lm.kvs[value])
+func (self *lruCache) Contains(value interface{}) bool {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	
+	return self.contains(value)
 }
 
-func (lm *lruCache) Add(value interface{}) {
-	lm.AddIfAbsent(value)
+func (self *lruCache) contains(value interface{}) bool {
+	return util.IsNotNil(self.kvs[value])
 }
 
-func (lm *lruCache) AddIfAbsent(value interface{}) interface{} {
-	if lm.Contains(value) {
-		for e := lm.ks.Front(); e != nil; e = e.Next() {
-			lm.ks.MoveToBack(e)
+func (self *lruCache) Add(value interface{}) {
+	self.AddIfAbsent(value)
+}
+
+func (self *lruCache) AddIfAbsent(value interface{}) interface{} {
+	self.lock.Lock()
+	defer self.lock.Unlock()
+	
+	if self.contains(value) {
+		for e := self.ks.Front(); e != nil; e = e.Next() {
+			self.ks.MoveToBack(e)
 			break
 		}
 		return value
 	} else {
-		if lm.ks.Len() == lm.max {
-			delete(lm.kvs, lm.ks.Front().Value)
-			lm.ks.Remove(lm.ks.Front())
+		if self.ks.Len() == self.max {
+			delete(self.kvs, self.ks.Front().Value)
+			self.ks.Remove(self.ks.Front())
 		}
 		
-		lm.ks.PushBack(value)
-		lm.kvs[value] = lruDv
+		self.ks.PushBack(value)
+		self.kvs[value] = struct{}{}
 		return nil
 	}
 }
 
-func (lm *lruCache) Remove(value interface{}) bool {
-	if lm.Contains(value) {
-		for e := lm.ks.Front(); e != nil; e = e.Next() {
-			lm.ks.Remove(e)
+func (self *lruCache) Remove(value interface{}) bool {
+	self.lock.Lock()
+	defer self.lock.Unlock()
+	
+	return self.remove(value)
+}
+
+func (self *lruCache) remove(value interface{}) bool {
+	if self.contains(value) {
+		for e := self.ks.Front(); e != nil; e = e.Next() {
+			self.ks.Remove(e)
 			break
 		}
-		delete(lm.kvs, value)
+		delete(self.kvs, value)
 		return true
 	}
 	
 	return false
 }
 
-func (lm *lruCache) Foreach(consumer func(...interface{})) {
-	for e := lm.ks.Front(); e != nil; e = e.Next() {
+func (self *lruCache) Foreach(consumer func(...interface{})) {
+	for e := self.ks.Front(); e != nil; e = e.Next() {
 		consumer(e.Value)
 	}
 }
 
-func (lm *lruCache) ForeachBreak(bk func(...interface{}) bool, consumer func(...interface{})) interface{} {
-	for value := range lm.kvs {
+func (self *lruCache) ForeachBreak(bk func(...interface{}) bool, consumer func(...interface{})) interface{} {
+	for value := range self.kvs {
 		if b := bk(value); b {
 			return value
 		}
@@ -85,7 +101,7 @@ func (lm *lruCache) ForeachBreak(bk func(...interface{}) bool, consumer func(...
 	return nil
 }
 
-func (lm *lruCache) Clear() {
-	lm.ks.Init()
-	lm.kvs = make(map[interface{}]interface{})
+func (self *lruCache) Clear() {
+	self.ks.Init()
+	self.kvs = make(map[interface{}]interface{})
 }

@@ -1,7 +1,6 @@
 package iterf
 
 type Set interface {
-	Len() int
 	Contains(interface{}) bool
 	Add(interface{}) bool
 	Remove(interface{}) bool
@@ -9,7 +8,7 @@ type Set interface {
 	AddAll(Set) bool
 	RetainAll(Set) bool
 	RemoveAll(Set) bool
-	Clear()
-	
+
+	Collection
 	Iterator
 }
