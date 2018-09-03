@@ -86,12 +86,18 @@ func (self *lruCache) remove(value interface{}) bool {
 }
 
 func (self *lruCache) Foreach(consumer func(...interface{})) {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	
 	for e := self.ks.Front(); e != nil; e = e.Next() {
 		consumer(e.Value)
 	}
 }
 
 func (self *lruCache) ForeachBreak(bk func(...interface{}) bool, consumer func(...interface{})) interface{} {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	
 	for value := range self.kvs {
 		if b := bk(value); b {
 			return value
@@ -102,6 +108,9 @@ func (self *lruCache) ForeachBreak(bk func(...interface{}) bool, consumer func(.
 }
 
 func (self *lruCache) Clear() {
+	self.lock.Lock()
+	defer self.lock.Unlock()
+	
 	self.ks.Init()
-	self.kvs = make(map[interface{}]interface{})
+	self.kvs = make(map[interface{}]struct{})
 }
