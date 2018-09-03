@@ -1,8 +1,23 @@
 ### NUT 是GO语言工具库
 
-NUT 是GO语言工具库，提供一些常用数据结构的封装。NUT 抽象了Map、Set、Iterator、Cache、Lock接口，且以此为基础实现了LinkedMap、Set、LRUCache、Lock。
+NUT 是GO语言工具库，提供一些常用数据结构的封装。NUT 抽象了Iterator/Collection接口以及Map、Set、Cache、Lock接口，且以此为基础实现了LinkedMap、Set、LRUCache、Lock。
 
 已下为接口说明：
+
+### Iterator
+
+```go
+type Collection interface {
+	Len() uint
+	Clear()
+}
+```
+
+| 接口           | 说明                                       |
+| ------------ | ---------------------------------------- |
+| Len      | 返回当前集合大小                  |
+| Clear | 重置集合 |
+
 
 ### Iterator
 
@@ -19,12 +34,10 @@ type Iterator interface {
 | ForeachBreak | 定义了遍历操作，但可以提前中断遍历，返回遍历值；用户需要自定义中止函数和消费遍历值函数 |
 
 
-
 ### Map
 
 ```go
 type Map interface {
-	Len() int
 	ContainsKey(interface{}) bool
 	Get(interface{}) interface{}
 	Put(interface{}, interface{}) interface{}
@@ -33,8 +46,8 @@ type Map interface {
 	ComputeIfPresent(interface{}, func(interface{}, interface{}) interface{}) interface{}
 	Remove(interface{}) interface{}
 	PutAll(Map)
-	Clear()
 
+    Collection
 	Iterator
 }
 ```
@@ -60,7 +73,6 @@ type Map interface {
 
 ```go
 type Set interface {
-	Len() int
 	Contains(interface{}) bool
 	Add(interface{}) bool
 	Remove(interface{}) bool
@@ -68,8 +80,8 @@ type Set interface {
 	AddAll(Set) bool
 	RetainAll(Set) bool
 	RemoveAll(Set) bool
-	Clear()
-	
+
+    Collection
 	Iterator
 }
 ```
@@ -94,13 +106,12 @@ type Set interface {
 
 ```go
 type Cache interface {
-	Len() int
 	Contains(interface{}) bool
 	Add(interface{})
 	AddIfAbsent(interface{}) interface{}
 	Remove(interface{}) bool
-	Clear()
-	
+
+	Collection
 	Iterator
 }
 ```
