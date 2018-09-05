@@ -2,14 +2,17 @@ package nut
 
 import (
 	"testing"
-	"sync"
+	"fmt"
 )
 
 func TestSet(t *testing.T) {
-	var lock sync.RWMutex
-	lock.RLock()
-	lock.Lock()
-	//lock.RUnlock()
-	//lock.Unlock()
+	s := NewSet()
+	s.Add("key1")
+	s.Add("key1")
+	s.Foreach(func(i ...interface{}) {
+		fmt.Println(i[0])
+	})
+	s.Remove("key1")
+	fmt.Println(s.Contains("key1"))
 }
 

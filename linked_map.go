@@ -58,13 +58,10 @@ func (self *linkedMap) Put(key interface{}, value interface{}) interface{} {
 
 func (self *linkedMap) put(key interface{}, value interface{}) interface{} {
 	if util.IsNil(self.kvs[key]) {
-		self.ks.PushFront(key)
+		self.ks.PushBack(key)
 	} else {
-		for e := self.ks.Front(); e != nil; e = e.Next() {
-			self.ks.MoveToBack(e)
-		}
+		self.kvs[key] = value
 	}
-	self.kvs[key] = value
 	return value
 }
 
